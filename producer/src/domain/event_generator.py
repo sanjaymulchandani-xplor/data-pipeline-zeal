@@ -2,7 +2,7 @@ import random
 import uuid
 from typing import Iterator
 
-from domain.events import UserActivityEvent
+from shared.domain.events import UserActivityEvent
 
 
 EVENT_TYPES = [

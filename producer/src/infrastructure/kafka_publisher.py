@@ -1,11 +1,11 @@
 import json
 import logging
-from typing import Protocol
+from abc import ABC, abstractmethod
 
 from confluent_kafka import Producer
 from prometheus_client import Counter, Histogram
 
-from domain.events import UserActivityEvent
+from shared.domain.events import UserActivityEvent
 
 
 logger = logging.getLogger(__name__)
@@ -29,15 +29,23 @@ PUBLISH_ERRORS = Counter(
 )
 
 
-class EventPublisher(Protocol):
+class EventPublisher(ABC):
+    """Abstract base class defining the interface for event publishing."""
+
+    @abstractmethod
     def publish(self, event: UserActivityEvent) -> None:
-        ...
+        # Publish an event to the message broker
+        pass
 
+    @abstractmethod
     def flush(self) -> None:
-        ...
+        # Flush pending messages
+        pass
 
 
-class KafkaEventPublisher:
+class KafkaEventPublisher(EventPublisher):
+    """Kafka implementation of the event publisher."""
+
     def __init__(self, bootstrap_servers: str, topic: str):
         self._topic = topic
         self._producer = Producer({
