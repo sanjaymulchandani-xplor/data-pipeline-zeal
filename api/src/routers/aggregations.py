@@ -6,7 +6,7 @@ from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 
 from infrastructure.database import Database
-from shared.infrastructure.query_loader import load_query
+from utils.infrastructure.query_loader import load_query
 
 QUERIES_DIR = os.path.join(os.path.dirname(__file__), "..", "infrastructure", "queries")
 

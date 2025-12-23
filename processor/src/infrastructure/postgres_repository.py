@@ -8,7 +8,7 @@ from psycopg2.extras import execute_values
 from prometheus_client import Counter, Histogram
 
 from domain.aggregation import AggregationRecord
-from shared.infrastructure.query_loader import load_query
+from utils.infrastructure.query_loader import load_query
 
 QUERIES_DIR = os.path.join(os.path.dirname(__file__), "queries")
 

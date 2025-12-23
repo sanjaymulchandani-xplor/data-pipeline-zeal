@@ -1,6 +1,6 @@
 import os
 
-from shared.config.database import PostgresConfig
+from utils.config.database import PostgresConfig
 
 
 class Config:

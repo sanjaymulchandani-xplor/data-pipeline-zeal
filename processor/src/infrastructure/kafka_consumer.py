@@ -6,7 +6,7 @@ from confluent_kafka import Consumer, KafkaError, KafkaException
 from prometheus_client import Counter, Gauge, Histogram
 
 from application.aggregation_service import EventConsumer
-from shared.domain.events import UserActivityEvent
+from utils.domain.events import UserActivityEvent
 
 
 logger = logging.getLogger(__name__)

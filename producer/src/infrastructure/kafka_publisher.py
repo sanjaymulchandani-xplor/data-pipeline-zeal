@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from confluent_kafka import Producer
 from prometheus_client import Counter, Histogram
 
-from shared.domain.events import UserActivityEvent
+from utils.domain.events import UserActivityEvent
 
 
 logger = logging.getLogger(__name__)

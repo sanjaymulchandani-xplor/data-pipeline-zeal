@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional
 
-from shared.domain.events import UserActivityEvent
+from utils.domain.events import UserActivityEvent
 
 
 @dataclass

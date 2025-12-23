@@ -6,7 +6,7 @@ from typing import Iterator
 from prometheus_client import Counter, Histogram, Gauge
 
 from domain.aggregation import AggregationEngine, AggregationRecord
-from shared.domain.events import UserActivityEvent
+from utils.domain.events import UserActivityEvent
 
 
 logger = logging.getLogger(__name__)

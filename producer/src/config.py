@@ -1,6 +1,6 @@
 import os
 
-from shared.config.kafka import KafkaConfig
+from utils.config.kafka import KafkaConfig
 
 
 class Config:

@@ -1,7 +1,7 @@
 import os
 
-from shared.config.kafka import KafkaConfig
-from shared.config.database import PostgresConfig
+from utils.config.kafka import KafkaConfig
+from utils.config.database import PostgresConfig
 
 
 class Config:

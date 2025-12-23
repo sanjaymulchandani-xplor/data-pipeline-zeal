@@ -10,7 +10,7 @@ from confluent_kafka import Producer
 
 from config import Config
 from domain.event_generator import EventGenerator
-from shared.domain.events import UserActivityEvent
+from utils.domain.events import UserActivityEvent
 
 import json
 

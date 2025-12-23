@@ -9,10 +9,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY shared /app/shared
+COPY utils /app/utils
 COPY api/src/ .
 
-ENV PYTHONPATH=/app:/app/shared
+ENV PYTHONPATH=/app:/app/utils
 
 EXPOSE 8080
 
