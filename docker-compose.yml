@@ -105,6 +105,24 @@ services:
     profiles:
       - bulk
 
+  simulation-producer:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    container_name: simulation-producer
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC: user-activity-events
+      USER_POOL_SIZE: 500
+      LOG_LEVEL: INFO
+    command: ["python", "simulation_producer.py", "--target-events", "5000000", "--hours", "24", "--batch-size", "10"]
+    profiles:
+      - simulation
+    restart: unless-stopped
+
   processor:
     build:
       context: .
