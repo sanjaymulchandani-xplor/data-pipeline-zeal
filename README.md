@@ -63,7 +63,7 @@ Open http://localhost:3000
 - Username: `admin`
 - Password: `admin`
 
-Navigate to Dashboards > Pipeline to view metrics or click [here](http://localhost:3000/d/streaming-pipeline/streaming-data-pipeline?orgId=1&refresh=5s).
+Navigate to Dashboards > Pipeline to view metrics or click [here](http://localhost:3000/d/streaming-pipeline/streaming-data-pipeline).
 
 ### Prometheus Metrics
 
