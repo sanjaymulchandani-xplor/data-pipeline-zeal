@@ -1,3 +1,8 @@
+## Architecture
+
+<img width="1037" height="398" alt="image" src="https://github.com/user-attachments/assets/12689f81-a4bb-49d0-9927-ff65246694fa" />
+
+
 ## Prerequisites
 
 - Docker and Docker Compose
