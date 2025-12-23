@@ -21,6 +21,17 @@ Wait for services to be healthy (about 30 seconds), then verify:
 docker compose ps
 ```
 
+## Service Access
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| API | http://localhost:8080 | None |
+| Grafana | http://localhost:3000 | admin / admin |
+| Prometheus | http://localhost:9090 | None |
+| pgAdmin | http://localhost:5050 | admin@example.com / admin123 |
+| PostgreSQL | localhost:5432 | pipeline / pipeline (database: pipeline) |
+| Kafka | localhost:9094 | None |
+
 ## Running Simulations
 
 ### Default Producer
@@ -81,7 +92,21 @@ Open http://localhost:5050
 - Email: `admin@example.com`
 - Password: `admin123`
 
-Connect to the pre-configured server and query the `hourly_aggregations` table.
+The server is pre-configured. When prompted for database password, enter: `pipeline`
+
+Query the `hourly_aggregations` table to view aggregated data.
+
+### Direct Database Connection
+
+Connect using any PostgreSQL client:
+
+- Host: `localhost`
+- Port: `5432`
+- Database: `pipeline`
+- Username: `pipeline`
+- Password: `pipeline`
+
+Connection string: `postgresql://pipeline:pipeline@localhost:5432/pipeline`
 
 ### Direct Database Query
 
