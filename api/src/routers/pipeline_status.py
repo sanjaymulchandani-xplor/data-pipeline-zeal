@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException
@@ -26,7 +26,9 @@ class PipelineMemoryStatus(BaseModel):
     next_possible_db_write: Optional[datetime]
 
 
-def parse_prometheus_metric(lines: List[str], metric_name: str, labels: dict = None) -> Optional[float]:
+def parse_prometheus_metric(
+    lines: List[str], metric_name: str, labels: dict = None
+) -> Optional[float]:
     # Parse a single metric value from Prometheus text format
     for line in lines:
         if line.startswith("#"):
@@ -73,31 +75,41 @@ async def get_memory_status():
             response = await client.get(Config.PROCESSOR_METRICS_URL)
             response.raise_for_status()
     except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f"Failed to reach processor: {str(e)}")
-    
+        raise HTTPException(
+            status_code=503, detail=f"Failed to reach processor: {str(e)}"
+        )
+
     lines = response.text.split("\n")
-    
-    total_events = parse_prometheus_metric(lines, "processor_events_in_memory_total") or 0
+
+    total_events = (
+        parse_prometheus_metric(lines, "processor_events_in_memory_total") or 0
+    )
     active_windows = parse_prometheus_metric(lines, "processor_active_windows") or 0
-    seconds_until_flush = parse_prometheus_metric(lines, "processor_seconds_until_next_flush") or 0
-    earliest_end_ts = parse_prometheus_metric(lines, "processor_earliest_window_end_timestamp")
-    
-    events_by_type_raw = parse_prometheus_metrics_with_labels(lines, "processor_events_in_memory_by_type")
+    seconds_until_flush = (
+        parse_prometheus_metric(lines, "processor_seconds_until_next_flush") or 0
+    )
+    earliest_end_ts = parse_prometheus_metric(
+        lines, "processor_earliest_window_end_timestamp"
+    )
+
+    events_by_type_raw = parse_prometheus_metrics_with_labels(
+        lines, "processor_events_in_memory_by_type"
+    )
     events_by_type = [
         WindowStatus(event_type=et, events_in_memory=int(count))
         for et, count in sorted(events_by_type_raw.items(), key=lambda x: -x[1])
     ]
-    
+
     earliest_window_end = None
     next_possible_db_write = None
-    
+
     if earliest_end_ts and earliest_end_ts > 0:
         earliest_window_end = datetime.fromtimestamp(earliest_end_ts)
         grace_period = 60
         next_possible_db_write = datetime.fromtimestamp(earliest_end_ts + grace_period)
-    
+
     return PipelineMemoryStatus(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         total_events_in_memory=int(total_events),
         active_windows=int(active_windows),
         events_by_type=events_by_type,
@@ -123,7 +135,8 @@ async def flush_to_database():
             response.raise_for_status()
             return FlushResponse(**response.json())
     except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f"Failed to reach processor: {str(e)}")
+        raise HTTPException(
+            status_code=503, detail=f"Failed to reach processor: {str(e)}"
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-

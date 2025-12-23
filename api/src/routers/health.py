@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -18,7 +18,7 @@ class HealthResponse(BaseModel):
 async def health_check():
     return HealthResponse(
         status="healthy",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         service="streaming-pipeline-api",
         version="1.0.0",
     )
@@ -27,4 +27,3 @@ async def health_check():
 @router.get("/ready")
 async def readiness_check():
     return {"ready": True}
-

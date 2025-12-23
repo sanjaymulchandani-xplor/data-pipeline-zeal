@@ -1,5 +1,5 @@
 from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
@@ -45,7 +45,7 @@ class PrometheusResponse(BaseModel):
 async def get_producer_metrics():
     metrics = await parse_prometheus_metrics(Config.PRODUCER_METRICS_URL)
     return MetricsResponse(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         source="producer",
         metrics={
             name: Metric(
@@ -64,7 +64,7 @@ async def get_producer_metrics():
 async def get_processor_metrics():
     metrics = await parse_prometheus_metrics(Config.PROCESSOR_METRICS_URL)
     return MetricsResponse(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         source="processor",
         metrics={
             name: Metric(
@@ -85,7 +85,7 @@ async def query_prometheus(
 ):
     results = await prometheus.query(q)
     return PrometheusResponse(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         query=q,
         results=[
             PrometheusQueryResult(
@@ -122,7 +122,7 @@ async def get_pipeline_summary():
     consume_errors = await prometheus.query("sum(processor_consume_errors_total)")
     publish_errors = await prometheus.query("sum(producer_publish_errors_total)")
     db_errors = await prometheus.query("sum(processor_db_write_errors_total)")
-    
+
     events_produced = [
         SummaryMetric(
             event_type=r["metric"].get("event_type", "unknown"),
@@ -130,7 +130,7 @@ async def get_pipeline_summary():
         )
         for r in produced
     ]
-    
+
     events_consumed = [
         SummaryMetric(
             event_type=r["metric"].get("event_type", "unknown"),
@@ -138,7 +138,7 @@ async def get_pipeline_summary():
         )
         for r in consumed
     ]
-    
+
     def extract_value(results: list) -> float:
         if results and results[0].get("value"):
             try:
@@ -146,9 +146,9 @@ async def get_pipeline_summary():
             except (IndexError, ValueError):
                 pass
         return 0.0
-    
+
     return PipelineSummary(
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         events_produced=events_produced,
         events_consumed=events_consumed,
         total_produced=sum(m.count for m in events_produced),
@@ -161,4 +161,3 @@ async def get_pipeline_summary():
             "db_write_errors": extract_value(db_errors),
         },
     )
-

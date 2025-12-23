@@ -1,8 +1,9 @@
 import json
 import logging
 from abc import ABC, abstractmethod
+from typing import Optional
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaError, Message
 from prometheus_client import Counter, Histogram
 
 from utils.domain.events import UserActivityEvent
@@ -34,30 +35,33 @@ class EventPublisher(ABC):
 
     @abstractmethod
     def publish(self, event: UserActivityEvent) -> None:
-        # Publish an event to the message broker
+        """Publish an event to the message broker."""
         pass
 
     @abstractmethod
     def flush(self) -> None:
-        # Flush pending messages
+        """Flush pending messages."""
         pass
 
 
 class KafkaEventPublisher(EventPublisher):
     """Kafka implementation of the event publisher."""
 
-    def __init__(self, bootstrap_servers: str, topic: str):
+    def __init__(self, bootstrap_servers: str, topic: str) -> None:
         self._topic = topic
-        self._producer = Producer({
-            "bootstrap.servers": bootstrap_servers,
-            "acks": "all",
-            "retries": 3,
-            "retry.backoff.ms": 100,
-            "linger.ms": 5,
-            "batch.size": 16384,
-        })
+        self._producer = Producer(
+            {
+                "bootstrap.servers": bootstrap_servers,
+                "acks": "all",
+                "retries": 3,
+                "retry.backoff.ms": 100,
+                "linger.ms": 5,
+                "batch.size": 16384,
+            }
+        )
 
-    def _delivery_callback(self, err, msg):
+    def _delivery_callback(self, err: Optional[KafkaError], msg: Message) -> None:
+        """Handle delivery confirmation from Kafka."""
         if err is not None:
             logger.error("Failed to deliver message: %s", err)
             PUBLISH_ERRORS.inc()
@@ -74,9 +78,8 @@ class KafkaEventPublisher(EventPublisher):
                 callback=self._delivery_callback,
             )
             self._producer.poll(0)
-        
+
         EVENTS_PRODUCED.labels(event_type=event.event_type).inc()
 
     def flush(self) -> None:
         self._producer.flush(timeout=10)
-

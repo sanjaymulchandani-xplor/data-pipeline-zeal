@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 import uuid
 
@@ -26,12 +26,12 @@ class UserActivityEvent:
         duration_ms: Optional[int] = None,
         metadata: Optional[dict] = None,
     ) -> "UserActivityEvent":
-        # Factory method to create a new event with auto-generated id and timestamp
+        """Factory method to create a new event with auto-generated id and timestamp."""
         return UserActivityEvent(
             event_id=str(uuid.uuid4()),
             user_id=user_id,
             event_type=event_type,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             session_id=session_id,
             page_url=page_url,
             duration_ms=duration_ms,
@@ -64,4 +64,3 @@ class UserActivityEvent:
             duration_ms=data.get("duration_ms"),
             metadata=data.get("metadata"),
         )
-
