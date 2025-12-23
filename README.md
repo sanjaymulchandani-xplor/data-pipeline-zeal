@@ -7,6 +7,18 @@
 
 - Docker and Docker Compose
 
+## Security Note
+
+This project uses default credentials that are suitable for local development only.
+All passwords and secrets in `docker-compose.yml` and `.env.example` are placeholders.
+
+**For production deployments:**
+- Use strong, unique passwords
+- Use environment variables or a secrets manager
+- Never commit real credentials to version control
+
+See `.env.example` for a list of configurable environment variables.
+
 ## Setup
 
 Start all services:
