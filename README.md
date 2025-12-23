@@ -119,6 +119,8 @@ docker compose exec postgres psql -U pipeline -d pipeline -c \
 
 Base URL: http://localhost:8080
 
+API Documentation: http://localhost:8080/docs
+
 ### Health Check
 
 ```bash
